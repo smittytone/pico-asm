@@ -13,6 +13,5 @@ cont:       strb r5, [r1]
             add r1, #1
             cmp r5, #0
             bne loop
-exit:       sub r0, r1, r4
-            pop {r4-r5}
+exit:       pop {r4-r5}
             bx LR
