@@ -1,2 +1,3 @@
-# pico-asm
-Raspberry Pi Pico Assembly Sample
+# RP2040 Assembly Demo
+
+Raspberry Pi Pico assembly language application demos.
