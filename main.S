@@ -23,11 +23,11 @@ loop:   ldr r0, =instr          @ Capture address of in-string
 
         ldr r0, =outstr         @ 42949672 -> R0
         bl printf
-        
+
         cmp r4, #12             @ Check r4 and r5 are untouched
-        beq end
+        bne error
         cmp r5, #13
-        beq end
+        bne error
 
         ldr r6, =50000000       @ Delay to slow speed of output strings
 delay:  sub r6, #1
