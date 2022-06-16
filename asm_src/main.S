@@ -21,7 +21,7 @@ loop:   ldr r0, =instr          @ Capture address of in-string
 
         bl to_upper             @ Jump to uppercase routine
 
-        ldr r0, =outstr         @ 42949672 -> R0
+        ldr r0, =outstr         @ Address of outstr -> R0
         bl printf
 
         cmp r4, #12             @ Check r4 and r5 are untouched

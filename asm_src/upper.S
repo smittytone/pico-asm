@@ -1,4 +1,4 @@
-.global to_upper
+.global     to_upper            @ File is global
 
 to_upper:   push {r4-r5}
             mov r4, r1

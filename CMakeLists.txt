@@ -1,16 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
+
 include(pico_sdk_import.cmake)
 project(pico-asm LANGUAGES C CXX ASM
                  VERSION 1.0.0)
+
 add_executable(pico-asm
-               main.S
-               upper.S)
+               asm_src/main.S
+               asm_src/upper.S)
 
 pico_sdk_init()
-
-pico_enable_stdio_usb(pico-asm 1)
-pico_enable_stdio_uart(pico-asm 1)
-pico_add_extra_outputs(pico-asm)
 
 target_link_libraries(pico-asm
                       pico_stdlib
@@ -19,3 +17,7 @@ target_link_libraries(pico-asm
                       hardware_spi
                       hardware_adc
                       hardware_uart)
+
+pico_enable_stdio_usb(pico-asm 1)
+pico_enable_stdio_uart(pico-asm 1)
+pico_add_extra_outputs(pico-asm)
