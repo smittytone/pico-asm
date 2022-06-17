@@ -22,6 +22,9 @@
       location = "group:CMakeLists.txt">
    </FileRef>
    <FileRef
+      location = "group:deploy.sh">
+   </FileRef>
+   <FileRef
       location = "group:README.md">
    </FileRef>
 </Workspace>
