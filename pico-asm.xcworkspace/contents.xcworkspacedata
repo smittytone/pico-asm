@@ -8,6 +8,9 @@
          location = "group:main.S">
       </FileRef>
       <FileRef
+         location = "group:sdk_inlines.c">
+      </FileRef>
+      <FileRef
          location = "group:upper.S">
       </FileRef>
    </Group>

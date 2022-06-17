@@ -8,38 +8,51 @@
  *
  */
 
+
+/*
+ * CONSTANTS
+ */
+.equ    LED_PIN,        25
+.equ    GPIO_DIR_IN,    0
+.equ    GPIO_DIR_OUT,   1
+.equ    PIN_HIGH,       1
+.equ    PIN_LOW,        0
+.equ    DELAY_TIME_MS,  200
+
+
+/*
+ * ASSEMBLY HEADER
+ */
 @ The following macros need to be on separate lines
 .thumb_func                     @ Use Thumb instructions
 .global main                    @ Set entry point
 
 
-main:   bl stdio_init_all       @ Jump to STDIO initialisation routine
-loop:   ldr r0, =instr          @ Capture address of in-string
-        ldr r1, =outstr         @ Capture address of out-string
-        mov r4, #12
-        mov r5, #13
+/*
+ * RUNTIME START
+ */
+main:   bl stdio_init_all       @ Jump to SDK STDIO initialisation routine
+        
+        mov r0, #LED_PIN        @ Set the pin number
+        bl gpio_init            @ Jump to SDK GPIO initialisation routine
 
-        bl to_upper             @ Jump to uppercase routine
+        mov r0, #LED_PIN        @ Set the pin number
+        mov r1, #GPIO_DIR_OUT   @ Set the pin direction
+        bl gpio_set_direction   @ Jump to SDK pin direction routine
 
-        ldr r0, =outstr         @ Address of outstr -> R0
-        bl printf
+loop:   mov r0, #LED_PIN        @ Set the pin number
+        mov r1, #PIN_HIGH       @ Set the pin state
+        bl gpio_set_state       @ Jump to SDK pin state routine
 
-        cmp r4, #12             @ Check r4 and r5 are untouched
-        bne error
-        cmp r5, #13
-        bne error
+        mov r0, #DELAY_TIME_MS  @ Set the delay period
+        bl sleep_ms             @ Delay
 
-        ldr r6, =50000000       @ Delay to slow speed of output strings
-delay:  sub r6, #1
-        bne delay
+        mov r0, #LED_PIN        @ Set the pin number
+        mov r1, #PIN_LOW        @ Set the pin state
+        bl gpio_set_state       @ Jump to SDK pin state routine
 
-        b loop                  @ And back to the start
+        mov r0, #DELAY_TIME_MS  @ Set the delay period
+        bl sleep_ms             @ Delay
+        
+        b loop                  @ Loop infinitely
 
-error:  ldr r0, =errstr
-        bl printf
-        wfi
-
-.data                           @ Mark data start
-instr:  .asciz  "This is the test string THAT we will convert!\n"
-outstr: .fill   255, 1, 0       @ 255 bytes, initialised to zero
-errstr: .asciz  "[ERROR] R4, R5 values not popped\n"

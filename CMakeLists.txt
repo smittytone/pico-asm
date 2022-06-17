@@ -6,7 +6,7 @@ project(pico-asm LANGUAGES C CXX ASM
 
 add_executable(pico-asm
                asm_src/main.S
-               asm_src/upper.S)
+               asm_src/sdk_inlines.c)
 
 pico_sdk_init()
 
