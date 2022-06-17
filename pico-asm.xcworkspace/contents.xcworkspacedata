@@ -2,17 +2,21 @@
 <Workspace
    version = "1.0">
    <Group
-      location = "group:asm_src"
-      name = "asm_src">
-      <FileRef
-         location = "group:main.S">
-      </FileRef>
-      <FileRef
-         location = "group:sdk_inlines.c">
-      </FileRef>
-      <FileRef
-         location = "group:upper.S">
-      </FileRef>
+      location = "group:source"
+      name = "source">
+      <Group
+         location = "group:asm_led_sdk"
+         name = "asm_led_sdk">
+         <FileRef
+            location = "group:CMakeLists.txt">
+         </FileRef>
+         <FileRef
+            location = "group:main.S">
+         </FileRef>
+         <FileRef
+            location = "group:sdk_inlines.c">
+         </FileRef>
+      </Group>
    </Group>
    <FileRef
       location = "group:CMakeLists.txt">

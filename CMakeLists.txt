@@ -1,23 +1,32 @@
 cmake_minimum_required(VERSION 3.14)
 
+# Set project data
+set(PROJECT_NAME "RP2040_ASM_PROJECT")
+set(BUILD_NUMBER "0")
+
+# Set app name(s) and version(s)
+set(APP_1_NAME "LED_SDK")
+set(APP_1_VERSION_NUMBER "1.0.0")
+
+# Specify the app(s) source code
+set(APP_1_SRC_DIRECTORY "${CMAKE_SOURCE_DIR}/source/asm_led_sdk")
+
+# Set env variable 'PICO_SDK_PATH' to the local Pico SDK
+# Comment out the set() if you have a global copy of the
+# SDK set and $PICO_SDK_PATH defined in your $PATH
+#set(ENV{PICO_SDK_PATH} "${CMAKE_SOURCE_DIR}/pico-sdk")
+
+# Include the Pico SDK
 include(pico_sdk_import.cmake)
-project(pico-asm LANGUAGES C CXX ASM
-                 VERSION 1.0.0)
 
-add_executable(pico-asm
-               asm_src/main.S
-               asm_src/sdk_inlines.c)
+# Name the project
+project(${PROJECT_NAME}
+        LANGUAGES C CXX ASM
+        DESCRIPTION "RP2040 applications coded in assembly"
+)
 
+# Initialise the Pico SDK
 pico_sdk_init()
 
-target_link_libraries(pico-asm
-                      pico_stdlib
-                      hardware_gpio
-                      hardware_i2c
-                      hardware_spi
-                      hardware_adc
-                      hardware_uart)
-
-pico_enable_stdio_usb(pico-asm 1)
-pico_enable_stdio_uart(pico-asm 1)
-pico_add_extra_outputs(pico-asm)
+# Include app source code directories
+add_subdirectory(${APP_1_SRC_DIRECTORY})
