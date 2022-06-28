@@ -6,7 +6,7 @@ set(BUILD_NUMBER "0")
 
 # Set app name(s) and version(s)
 set(APP_1_NAME "LED_SDK")
-set(APP_1_VERSION_NUMBER "1.0.0")
+set(APP_1_VERSION_NUMBER "1.0.1")
 
 # Specify the app(s) source code
 set(APP_1_SRC_DIRECTORY "${CMAKE_SOURCE_DIR}/source/asm_led_sdk")
