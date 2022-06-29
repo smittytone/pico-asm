@@ -32,7 +32,7 @@
 /*
  * RUNTIME START
  */
-main:                                   // Runtime start
+main:
 init:       bl stdio_init_all           // Jump to SDK STDIO initialisation routine
             movs r0, #0x80              // Set the delay period
             lsls r0, #4
@@ -87,17 +87,19 @@ loop:       movs r0, #LED_PIN           // Set the pin number
 
 output:     ldr r6, DELAY_TIME_FAST     // Set the comparison value
             cmp r5, r6                  // Is r5 set to 'fast', ie. bits 15, 7 set?
-            bne slow                    // No, jump to slow:
-            ldr r0, =TEXT_SET           // Set r0 to point to output text
+            bne use_unset               // No, jump to slow:
+
+use_set:    ldr r0, =TEXT_SET           // Set r0 to point to output text
             b print                     // Jump to print:
-slow:       ldr r0, =TEXT_UNSET         // Set r0 to point to output text
+
+use_unset:  ldr r0, =TEXT_UNSET         // Set r0 to point to output text
+
 print:      push {LR}                   // Save the LR - it'll be changed by the next line
             bl printf                   // Call the Pico SDK's printf()
             pop {PC}                    // Get LR from the stack and put it in PC to jump back
 
 /*
- Use four-bytes to store the delay time so that we can load
- into r0 a 32-bit value, rather than move in an 8-bit value
+ * DATA
  */
 .align 4
 TST_VAL:            .word           0xFFFFFFFF
