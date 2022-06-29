@@ -4,7 +4,7 @@
 # Deploy RP2040 application code
 #
 # @copyright 2022, Tony Smith @smittytone
-# @version   1.1.0
+# @version   1.1.1
 # @license   MIT
 #
 
@@ -43,6 +43,12 @@ update_build_number() {
     fi
 }
 
+check_for_err() {
+    if [[ ${1} -ne 0 ]]; then
+        exit 1
+    fi
+}
+
 # RUNTIME START
 for arg in "$@"; do
     check_arg=${arg,,}
@@ -73,22 +79,17 @@ err=0
 if [[ ${do_build} -eq 1 ]]; then
     # FROM 1.1.0 -- auto-update the build number
     update_build_number
-    
+
     if [[ ! -e "./build" ]]; then
         # No build folder? Then create it
         # and configure the build
         cmake -S . -B build/ -D "CMAKE_C_COMPILER:FILEPATH=$(which arm-none-eabi-gcc)" -D CMAKE_BUILD_TYPE:STRING=Release
-        err=$?
+        check_for_err $?
     fi
-    
+
     # Build the app
     cmake --build build
-    err=$?
-fi
-
-# Check for errors
-if [[ ${err} -ne 0 ]]; then
-    exit 1
+    check_for_err $?
 fi
 
 # Wait for the RPI_R2 mount
