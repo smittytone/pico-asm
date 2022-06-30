@@ -32,7 +32,7 @@
 /*
  * RUNTIME START
  */
-main:
+main:       lsls r0, r1, #2
 init:       bl stdio_init_all           // Jump to SDK STDIO initialisation routine
             movs r0, #0x80              // Set the delay period
             lsls r0, #4
@@ -54,9 +54,8 @@ init:       bl stdio_init_all           // Jump to SDK STDIO initialisation rout
              */
 check_r0:   ldr r0, TST_VAL
             movs r4, #0x80              // Set bit 7
-            movs r5, #0x08              // Set the number of shifts
-            lsls r4, r5                 // Shift r4 left 8 times to set bit 15
-            adds r4, #0x08              // Reset bit 7
+            lsls r4, #0x08              // Shift r4 left 8 times to set bit 15
+            adds r4, #0x08              // Re-set bit 7
             tst r0, r4                  // R0 & R4
             beq set_delay               // PSR-Z set indicates bits clear
             ldr r5, DELAY_TIME_FAST     // Set the delay period
