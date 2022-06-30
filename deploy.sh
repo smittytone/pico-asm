@@ -4,13 +4,14 @@
 # Deploy RP2040 application code
 #
 # @copyright 2022, Tony Smith @smittytone
-# @version   1.1.1
+# @version   1.2.0
 # @license   MIT
 #
 
 # GLOBALS
 timeout=30
 do_build=0
+do_clean=0
 rpi_path="/Volumes/RPI-RP2"
 uf2_path="UNDEFINED"
 cmake_path="$PWD/CMakeLists.txt"
@@ -24,6 +25,7 @@ show_help() {
     echo -e "Options:\n"
     echo "  -b / --build    Build the app first."
     echo "                  Default: use a pre-built version of the app"
+    echo "  -c / --clean    If building the app, do a clean build."
     echo "  -h / --help     Show this help screen"
     echo
 }
@@ -57,6 +59,8 @@ for arg in "$@"; do
         exit 0
     elif [[ "$check_arg" = "--build" || "$check_arg" = "-b" ]]; then
         do_build=1
+    elif [[ "$check_arg" = "--clean" || "$check_arg" = "-c" ]]; then
+        do_clean=1
     else
         uf2_path="$arg"
     fi
@@ -79,6 +83,10 @@ err=0
 if [[ ${do_build} -eq 1 ]]; then
     # FROM 1.1.0 -- auto-update the build number
     update_build_number
+
+    if [[ ${do_clean} -eq 1 && -d "./build" ]]; then
+        rm -rf "./build"
+    fi
 
     if [[ ! -e "./build" ]]; then
         # No build folder? Then create it

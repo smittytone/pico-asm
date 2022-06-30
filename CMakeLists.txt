@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 # Set project data
 set(PROJECT_NAME "RP2040_ASM_PROJECT")
-set(BUILD_NUMBER "2")
+set(BUILD_NUMBER "3")
 
 # Set app name(s) and version(s)
 set(APP_1_NAME "LED_SDK")
