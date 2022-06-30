@@ -26,7 +26,7 @@
  */
 .syntax     unified                     // Use ARM unified syntax, ie.
                                         // mandate S suffix for lo registers
-.thumb_func                             // Use Thumb instructions
+.thumb_func                             // This code uses Thumb instructions
 .global     main                        // Set entry point
 
 /*

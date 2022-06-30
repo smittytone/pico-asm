@@ -26,7 +26,7 @@
  */
 .syntax unified                     // Use ARM unified syntax, ie.
                                     // mandate S suffix for lo registers
-.thumb_func                         // Use Thumb instructions
+.thumb_func                         // This code uses Thumb instructions
 .global main                        // Set entry point
 
 /*
@@ -117,8 +117,8 @@ info:   ldr r5, CPUID               // Get the address of CPUID
  into r0 a 32-bit value, rather than move in an 8-bit value
  */
 .align 4
-DELAY_TIME_MS:  .word           500
-CPUID:          .word           0xE000ED00          // Memory map address of CPUID register
+@DELAY_TIME_MS:  .word           500
+@CPUID:          .word           0xE000ED00          // Memory map address of CPUID register
 TEXT0:          .asciz          "CPUID: 0x%08X\n"
 TEXT1:          .asciz          "Part:  0x%08X\n"
 TEXT2:          .asciz          "Rev:   0x%08X\n"
