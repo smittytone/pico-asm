@@ -32,7 +32,7 @@
 /*
  * RUNTIME START
  */
-main:       lsls r0, r1, #2
+main:
 init:       bl stdio_init_all           // Jump to SDK STDIO initialisation routine
             movs r0, #0x80              // Set the delay period
             lsls r0, #4

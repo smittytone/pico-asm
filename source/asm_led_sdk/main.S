@@ -32,7 +32,8 @@
 /*
  * RUNTIME START
  */
-main:   bl stdio_init_all           // Jump to SDK STDIO initialisation routine
+main:
+init:   bl stdio_init_all           // Jump to SDK STDIO initialisation routine
         movs r0, #0x80              // Set the delay period
         lsls r0, #4
         bl sleep_ms                 // Delay to allow the STDIO-over-USB to ready
@@ -117,8 +118,8 @@ info:   ldr r5, CPUID               // Get the address of CPUID
  into r0 a 32-bit value, rather than move in an 8-bit value
  */
 .align 4
-@DELAY_TIME_MS:  .word           500
-@CPUID:          .word           0xE000ED00          // Memory map address of CPUID register
+DELAY_TIME_MS:  .word           500
+CPUID:          .word           0xE000ED00          // Memory map address of CPUID register
 TEXT0:          .asciz          "CPUID: 0x%08X\n"
 TEXT1:          .asciz          "Part:  0x%08X\n"
 TEXT2:          .asciz          "Rev:   0x%08X\n"
