@@ -1,23 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
-   <Group
-      location = "group:source"
-      name = "source">
-      <Group
-         location = "group:asm_led_sdk"
-         name = "asm_led_sdk">
-         <FileRef
-            location = "group:CMakeLists.txt">
-         </FileRef>
-         <FileRef
-            location = "group:main.S">
-         </FileRef>
-         <FileRef
-            location = "group:sdk_inlines.c">
-         </FileRef>
-      </Group>
-   </Group>
+   <FileRef
+      location = "group:source">
+   </FileRef>
    <FileRef
       location = "group:CMakeLists.txt">
    </FileRef>
