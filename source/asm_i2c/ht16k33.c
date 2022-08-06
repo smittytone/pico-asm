@@ -22,6 +22,14 @@ uint8_t buffer[8];
  */
 
 void ht16k33_init() {
+    // Set up I2C
+    // TODO Port to assembly
+    i2c_init(I2C_PORT, I2C_FREQUENCY);
+    gpio_set_function(PIN_SDA, GPIO_FUNC_I2C);
+    gpio_set_function(PIN_SCL, GPIO_FUNC_I2C);
+    gpio_pull_up(PIN_SDA);
+    gpio_pull_up(PIN_SCL);
+    
     // Initialize the matrix by powering up
     ht16k33_power_on_or_off(ON);
     ht16k33_set_brightness(2);
