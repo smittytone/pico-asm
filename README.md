@@ -1,4 +1,4 @@
-# RP2040 Assembly Demo 1.1.1
+# RP2040 Assembly Demo 1.2.0
 
 Raspberry Pi Pico assembly language application demos.
 
@@ -17,6 +17,10 @@ Code in this repo uses the `.syntax unified` directive.
 |   |   |___main.S          // App assembly source
 |   |   
 |   |___/asm_ops            // Demo various ops
+|   |   |___CMakeLists.txt  // App CMake config file
+|   |   |___main.S          // App assembly source
+|   |
+|   |___/asm_i2c            // Demo I2C comms
 |   |   |___CMakeLists.txt  // App CMake config file
 |   |   |___main.S          // App assembly source
 |   |

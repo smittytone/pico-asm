@@ -1,7 +1,7 @@
 /*
  * pico-asm for Raspberry Pi Pico
  *
- * @version     1.1.0
+ * @version     1.2.0
  * @author      smittytone
  * @copyright   2022
  * @licence     MIT
