@@ -20,16 +20,7 @@ uint8_t buffer[8];
 /*
  *  HT16K33 LED Matrix Functions
  */
-
-void ht16k33_init() {
-    // Set up I2C
-    // TODO Port to assembly
-    i2c_init(I2C_PORT, I2C_FREQUENCY);
-    gpio_set_function(PIN_SDA, GPIO_FUNC_I2C);
-    gpio_set_function(PIN_SCL, GPIO_FUNC_I2C);
-    gpio_pull_up(PIN_SDA);
-    gpio_pull_up(PIN_SCL);
-    
+void ht16k33_init(void) {
     // Initialize the matrix by powering up
     ht16k33_power_on_or_off(ON);
     ht16k33_set_brightness(2);
@@ -62,12 +53,12 @@ void ht16k33_plot(uint8_t x, uint8_t y, bool is_set) {
     buffer[x] = col;
 }
 
-void ht16k33_clear() {
+void ht16k33_clear(void) {
     // Clear the display buffer
     for (uint8_t i = 0 ; i < 8 ; ++i) buffer[i] = 0;
 }
 
-void ht16k33_draw() {
+void ht16k33_draw(void) {
     // Set up the buffer holding the data to be
     // transmitted to the LED
     uint8_t output_buffer[17];
@@ -88,6 +79,16 @@ void ht16k33_draw() {
 /*
  *  I2C Functions
  */
+void i2c_config(void) {
+    // Set up I2C
+    // TODO Port to assembly
+    i2c_init(I2C_PORT, I2C_FREQUENCY);
+    gpio_set_function(PIN_SDA, GPIO_FUNC_I2C);
+    gpio_set_function(PIN_SCL, GPIO_FUNC_I2C);
+    gpio_pull_up(PIN_SDA);
+    gpio_pull_up(PIN_SCL);
+}
+
 void i2c_write_byte(uint8_t byte) {
     // Convenience function to write a single byte to the matrix
     i2c_write_blocking(I2C_PORT, HT16K33_ADDRESS, &byte, 1, false);

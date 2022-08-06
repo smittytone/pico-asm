@@ -49,14 +49,15 @@
  *  Function Prototypes
  */
 // HT16K33
-void ht16k33_init();
+void ht16k33_init(void);
 void ht16k33_power_on_or_off(uint8_t on);
 void ht16k33_set_brightness(uint8_t brightness);
 void ht16k33_plot(uint8_t x, uint8_t y, bool set);
-void ht16k33_clear();
-void ht16k33_draw();
+void ht16k33_clear(void);
+void ht16k33_draw(void);
 
 // I2C
+void i2c_config(void);
 void i2c_write_byte(uint8_t byte);
 void i2c_write_block(uint8_t *data, uint8_t count);
 
