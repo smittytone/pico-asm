@@ -29,42 +29,149 @@
 .thumb_func                         // This code uses Thumb instructions
 .global main                        // Set entry point
 
+.equ    pop_x,     4                // Deltas for to set SP for pushing
+.equ    pop_y,     8                // and pulling X, Y, DX, DY to and
+.equ    pop_dx,    12               // from the variable space within the
+.equ    pop_dy,    16               // stack
+.equ    psh_y,     4
+.equ    psh_dx,    8
+.equ    psh_dy,    12
+
 /*
  * RUNTIME START
  */
 main:
-start:  b init
-
-plot:   movs r0, #6                 // Set point x co-ord
-        movs r1, #1                 // Set point y co-ord
-        movs r3, #1                 // set point to set (0 = unset)
-        bl ht16k33_plot             // Plot the point
-
-        bl ht16k33_draw             // Draw the buffer
-
-loop:   ldr r0, DELAY_TIME_MS       // Set the delay period
-                                    // NOTE This form assembles as PC offset addressing,
-                                    //      so make sure DELAY_TIME_MS is an address in the
-                                    //      code space rather not the .data space
-        bl sleep_ms                 // Delay
-
-        b loop                      // Loop infinitely
 
 init:   bl stdio_init_all           // Jump to SDK STDIO initialisation routine
         movs r0, #0x80              // Set the delay period
+                                    // NOTE This form assembles as PC offset addressing,
+                                    //      so make sure DELAY_TIME_MS is an address in the
+                                    //      .code space rather not the .data space
         lsls r0, #4
         bl sleep_ms                 // Delay to allow the STDIO-over-USB to ready
 
         bl i2c_config               // Initialise the I2C peripheral
         bl ht16k33_init             // Initialise the display
 
-        b start
+        movs r7, #0                 // Set the X counter
+
+        mov r9, sp                  // r9 == SP, top of var store
+        movs r0, #0
+        push {r0}                   // X
+        push {r0}                   // Y
+        movs r0, #1
+        push {r0}                   // DX
+        push {r0}                   // DY
+
+loop:   bl ht16k33_clear            // Clear the buffer
+        
+        /*
+            Get X, Y and plot a dot at the
+            current co-ordinates
+         */
+        mov r10, sp                 // Record current SP
+        mov sp, r9                  // Get Y, X
+        sub sp, #pop_y
+        pop {r1}
+        pop {r0}
+        mov sp, r10                 // Restore SP
+        bl plot                     // Plot at (X, Y)
+
+        bl print
+        
+        mov r10, sp                 // Hold current SP
+
+        /*
+            Get X, Y, DX and DY, and set the updated
+            co-ordinates and direction flags.
+         */
+        mov sp, r9                  // Set SP to var store
+        sub sp, #pop_dy             // Get DY, DX, Y, X
+        pop {r3}
+        pop {r2}
+        pop {r1}
+        pop {r0}
+
+setx:   cmp r2, #1                  // DX == 1?
+        bne subx                    // N: goto subx
+addx:   adds r0, #1                 // X += 1
+        cmp r0, #6                  // X <= 6 ?
+        bls stx                     // YES goto stx
+        movs r2, #0                 // DX == 0
+        mov sp, r9
+        sub sp, #psh_dx
+        push {r2}
+        b stx
+subx:   subs r0, #1                 // X -= 1
+        bne stx                     // X > 0 ? YES goto stx
+        movs r2, #1                 // DX == 1
+        mov sp, r9
+        sub sp, #psh_dx
+        push {r2}
+stx:    mov sp, r9
+        push {r0}                   // Save X
+
+sety:   cmp r3, #1                  // DY == 1?
+        bne suby                    // N: goto suby
+addy:   adds r1, #1                 // Y += 1
+        cmp r1, #6                  // Y <= 6 ?
+        bls sty                     // YES goto sty
+        movs r3, #0                 // DY == 0
+        mov sp, r9
+        sub sp, #psh_dy
+        push {r3}
+        b sty
+suby:   subs r1, #1                 // Y -= 1
+        bne sty                     // Y > 0 ? YES goto sty
+        movs r3, #1                 // DY == 1
+        mov sp, r9
+        sub sp, #psh_dy
+        push {r3}
+sty:    mov sp, r9
+        sub sp, #psh_y
+        push {r1}                   // Save Y
+
+        mov sp, r10                 // Restore SP
+        
+        bl print                    // Debug output
+
+        ldr r0, DELAY_TIME_MS       // Set the delay period r0 = [DELAy_TIME_MS]
+        bl sleep_ms                 // Delay
+        
+        b loop                      // Loop infinitely back to start
+
+plot:   push {LR}
+        bl ht16k33_plot             // Plot the point
+        bl ht16k33_draw             // Draw the buffer
+        pop {PC}                    // RTS
+
+print:  push {lr}
+        
+        ldr r0, =TEXT1              // Set the format string
+        mov r10, sp                 // Record current SP
+        mov sp, r9                  // Get Y and X
+        sub sp, #pop_y
+        pop {r2}
+        pop {r1}
+        mov sp, r10                 // Restore SP
+        bl printf                   // Output the string
+        
+        ldr r0, =TEXT2              // Set the format string
+        mov r10, sp                 // Record current SP
+        mov sp, r9                  // Get DY and DX
+        sub sp, #pop_dy
+        pop {r2}
+        pop {r1}
+        mov sp, r10                 // Restore SP
+        bl printf                   // Output the string
+
+        pop {pc}                    // RTS
+
         
 /*
- Use four-bytes to store the delay time so that we can load
- into r0 a 32-bit value, rather than move in an 8-bit value
+ DATA in .CODE
  */
-.align 4
+.balign 4
 DELAY_TIME_MS:  .word           500
-CPUID:          .word           0xE000ED00          // Memory map address of CPUID register
-TEXT0:          .asciz          "CPUID: 0x%08X\n"
+TEXT1:          .asciz          "X: 0x%02X, Y: 0x%02X, "
+TEXT2:          .asciz          "DX: 0x%02X, DY: 0x%02X\n"
