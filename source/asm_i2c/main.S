@@ -53,8 +53,9 @@ init:   bl stdio_init_all           // Jump to SDK STDIO initialisation routine
         bl i2c_config               // Initialise the I2C peripheral
         bl ht16k33_init             // Initialise the display
 
-        movs r7, #0                 // Set the X counter
-
+        /*
+            Set up the variable space
+         */
         mov r9, sp                  // r9 == SP, top of var store
         movs r0, #0
         push {r0}                   // X
