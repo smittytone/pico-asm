@@ -23,9 +23,10 @@ Code in this repo uses the `.syntax unified` directive.
 |   |___/asm_i2c            // Demo I2C comms
 |   |   |___CMakeLists.txt  // App CMake config file
 |   |   |___main.S          // App assembly source
+|   |   |___main_no_stack.S // Alternative app assembly source
 |   |
 |   |___/common             // Source files common to all apps
-|   |   |___sdk_inlines.c   // Wrappers for SDK inline C functions
+|       |___sdk_inlines.c   // Wrappers for SDK inline C functions
 |
 |___CMakeLists.txt          // Top-level project CMake config file
 |___pico_sdk_import.cmake   // Raspberry Pi Pico SDK CMake import script
