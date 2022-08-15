@@ -12,11 +12,14 @@
 /*
  * CONSTANTS
  */
-.equ    LED_PIN,        25
-.equ    GPIO_DIR_IN,    0
-.equ    GPIO_DIR_OUT,   1
-.equ    PIN_HIGH,       1
-.equ    PIN_LOW,        0
+.equ    POP_X,      4                // Deltas for to set SP for pushing
+.equ    POP_Y,      8                // and pulling X, Y, DX, DY to and
+.equ    POP_DX,     12               // from the variable space within the
+.equ    POP_DY,     16               // stack
+.equ    PSX_X,      0
+.equ    PSH_Y,      4
+.equ    PSH_DX,     8
+.equ    PSH_DY,     12
 
 
 /*
@@ -29,13 +32,6 @@
 .thumb_func                         // This code uses Thumb instructions
 .global main                        // Set entry point
 
-.equ    pop_x,     4                // Deltas for to set SP for pushing
-.equ    pop_y,     8                // and pulling X, Y, DX, DY to and
-.equ    pop_dx,    12               // from the variable space within the
-.equ    pop_dy,    16               // stack
-.equ    psh_y,     4
-.equ    psh_dx,    8
-.equ    psh_dy,    12
 
 /*
  * RUNTIME START
@@ -54,40 +50,38 @@ init:   bl stdio_init_all           // Jump to SDK STDIO initialisation routine
         bl ht16k33_init             // Initialise the display
 
         /*
-            Set up the variable space
+         * Set up the variable space
          */
         mov r9, sp                  // r9 == SP, top of var store
         movs r0, #0
-        push {r0}                   // X
-        push {r0}                   // Y
+        push {r0}                   // Clear X...
+        push {r0}                   // ...Y
         movs r0, #1
-        push {r0}                   // DX
-        push {r0}                   // DY
+        push {r0}                   // Set DX...
+        push {r0}                   // ...DY
 
 loop:   bl ht16k33_clear            // Clear the buffer
         
         /*
-            Get X, Y and plot a dot at the
-            current co-ordinates
+         * Get X, Y and plot a dot at the
+         * current co-ordinates
          */
         mov r10, sp                 // Record current SP
-        mov sp, r9                  // Get Y, X
-        sub sp, #pop_y
-        pop {r1}
-        pop {r0}
+        mov sp, r9
+        sub sp, #POP_Y
+        pop {r1}                    // Get Y
+        pop {r0}                    // Get X
         mov sp, r10                 // Restore SP
+
         bl plot                     // Plot at (X, Y)
-
-        bl print
-        
-        mov r10, sp                 // Hold current SP
-
+               
         /*
-            Get X, Y, DX and DY, and set the updated
-            co-ordinates and direction flags.
+         * Get X, Y, DX and DY, and set the updated
+         * co-ordinates and direction flags.
          */
+        mov r10, sp                 // Record current SP
         mov sp, r9                  // Set SP to var store
-        sub sp, #pop_dy             // Get DY, DX, Y, X
+        sub sp, #POP_DY             // Get DY, DX, Y, X
         pop {r3}
         pop {r2}
         pop {r1}
@@ -100,14 +94,14 @@ addx:   adds r0, #1                 // X += 1
         bls stx                     // YES goto stx
         movs r2, #0                 // DX == 0
         mov sp, r9
-        sub sp, #psh_dx
+        sub sp, #PSH_DX
         push {r2}
         b stx
 subx:   subs r0, #1                 // X -= 1
         bne stx                     // X > 0 ? YES goto stx
         movs r2, #1                 // DX == 1
         mov sp, r9
-        sub sp, #psh_dx
+        sub sp, #PSH_DX
         push {r2}
 stx:    mov sp, r9
         push {r0}                   // Save X
@@ -119,21 +113,24 @@ addy:   adds r1, #1                 // Y += 1
         bls sty                     // YES goto sty
         movs r3, #0                 // DY == 0
         mov sp, r9
-        sub sp, #psh_dy
+        sub sp, #PSH_DY
         push {r3}
         b sty
 suby:   subs r1, #1                 // Y -= 1
         bne sty                     // Y > 0 ? YES goto sty
         movs r3, #1                 // DY == 1
         mov sp, r9
-        sub sp, #psh_dy
+        sub sp, #PSH_DY
         push {r3}
 sty:    mov sp, r9
-        sub sp, #psh_y
+        sub sp, #PSH_Y
         push {r1}                   // Save Y
 
         mov sp, r10                 // Restore SP
-        
+
+        /*
+         * End of loop code
+         */
         bl print                    // Debug output
 
         ldr r0, DELAY_TIME_MS       // Set the delay period r0 = [DELAy_TIME_MS]
@@ -141,17 +138,24 @@ sty:    mov sp, r9
         
         b loop                      // Loop infinitely back to start
 
+        /*
+         * Plot X, Y on the LED
+         */
 plot:   push {LR}
+        movs r2, #1                 // Set the pixel
         bl ht16k33_plot             // Plot the point
         bl ht16k33_draw             // Draw the buffer
         pop {PC}                    // RTS
 
+        /*
+         * Print X, Y, DX, DY values for debugging.
+         */
 print:  push {lr}
         
         ldr r0, =TEXT1              // Set the format string
         mov r10, sp                 // Record current SP
         mov sp, r9                  // Get Y and X
-        sub sp, #pop_y
+        sub sp, #POP_Y
         pop {r2}
         pop {r1}
         mov sp, r10                 // Restore SP
@@ -160,7 +164,7 @@ print:  push {lr}
         ldr r0, =TEXT2              // Set the format string
         mov r10, sp                 // Record current SP
         mov sp, r9                  // Get DY and DX
-        sub sp, #pop_dy
+        sub sp, #POP_DY
         pop {r2}
         pop {r1}
         mov sp, r10                 // Restore SP
@@ -170,7 +174,7 @@ print:  push {lr}
 
         
 /*
- DATA in .CODE
+ * READ-ONLY DATA in .CODE
  */
 .balign 4
 DELAY_TIME_MS:  .word           500
