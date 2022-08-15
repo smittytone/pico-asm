@@ -9,6 +9,9 @@
  */
 
 
+#include "i2c.S"
+
+
 /*
  * CONSTANTS
  */
@@ -46,7 +49,8 @@ init:   bl stdio_init_all           // Jump to SDK STDIO initialisation routine
         lsls r0, #4
         bl sleep_ms                 // Delay to allow the STDIO-over-USB to ready
 
-        bl i2c_config               // Initialise the I2C peripheral
+        //bl i2c_config               // Initialise the I2C peripheral
+        blx init_i2c
         bl ht16k33_init             // Initialise the display
 
         /*
@@ -180,3 +184,4 @@ print:  push {lr}
 DELAY_TIME_MS:  .word           500
 TEXT1:          .asciz          "X: 0x%02X, Y: 0x%02X, "
 TEXT2:          .asciz          "DX: 0x%02X, DY: 0x%02X\n"
+TEXT3:          .asciz          "Done %i\n"

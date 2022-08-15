@@ -40,6 +40,6 @@ project(${PROJECT_NAME}
 pico_sdk_init()
 
 # Include app source code directories
-add_subdirectory(${APP_1_SRC_DIRECTORY})
-add_subdirectory(${APP_2_SRC_DIRECTORY})
+#add_subdirectory(${APP_1_SRC_DIRECTORY})
+#add_subdirectory(${APP_2_SRC_DIRECTORY})
 add_subdirectory(${APP_3_SRC_DIRECTORY})
