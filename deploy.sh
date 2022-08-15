@@ -4,7 +4,7 @@
 # Deploy RP2040 application code
 #
 # @copyright 2022, Tony Smith @smittytone
-# @version   1.2.0
+# @version   1.3.0
 # @license   MIT
 #
 
@@ -41,7 +41,7 @@ update_build_number() {
         # macOS requires slightly different syntax from Unix
         sed -i '' "s|BUILD_NUMBER \"${old_num}\"|BUILD_NUMBER \"${new_num}\"|" "${cmake_path}"
     else
-        echo "[ERROR] Unknown OS... build number not incremented"
+        show_error "Unknown OS... build number not incremented"
     fi
 }
 
@@ -49,6 +49,22 @@ check_for_err() {
     if [[ ${1} -ne 0 ]]; then
         exit 1
     fi
+}
+
+show_error_and_exit() {
+    echo "[ERROR] $1"
+}
+
+show_error_and_exit() {
+    echo "[ERROR] $1... exiting"
+    exit 1
+}
+
+check_prereqs() {
+    prqs=(cmake)
+    for prq in "${prqs[@]}"; do
+        check=$(which ${prq}) || show_error_and_exit "Required utility ${prq} not installed"
+    done
 }
 
 # RUNTIME START
@@ -74,8 +90,7 @@ fi
 # Check we have what looks like a UF2
 extension="${uf2_path##*.}"
 if [[ "${extension}" != "uf2" ]]; then
-    echo "[ERROR] ${uf2_path} does not indicate a .uf2 file"
-    exit 1
+    show_error_and_exit "${uf2_path} does not indicate a .uf2 file"
 fi
 
 # Do we build first?
@@ -108,8 +123,7 @@ if [ ! -d "${rpi_path}" ]; then
         sleep 1
         ((count+=1))
         if [[ $count -eq $timeout ]]; then
-            echo "[ERROR] RP2040 device not mounted after ${timeout}s... exiting"
-            exit 1
+            show_error_and_exit "RP2040 device not mounted after ${timeout}s"
         fi
     done
 fi
@@ -118,8 +132,7 @@ echo "RP2040 device mounted..."
 
 # Check for available app file
 if [ ! -f "${uf2_path}" ]; then
-    echo "[ERROR] Cannot find file ${uf2_path}... exiting"
-    exit 1
+    show_error_and_exit "Cannot find file ${uf2_path}"
 fi
 
 echo "Copying ${uf2_path} to ${rpi_path}/${uf2_path##*/}"
@@ -128,8 +141,7 @@ echo "Copying ${uf2_path} to ${rpi_path}/${uf2_path##*/}"
 if cp -f "${uf2_path}" "${rpi_path}/${uf2_path##*/}"; then
     echo "${uf2_path##*/} copied to ${rpi_path}"
 else
-    echo "[ERROR] Could not copy ${uf2_path##*/} to ${rpi_path}/${uf2_path##*/}"
-    exit 1
+    show_error_and_exit " Could not copy ${uf2_path##*/} to ${rpi_path}/${uf2_path##*/}"
 fi
 
 exit 0
